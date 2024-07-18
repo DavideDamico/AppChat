@@ -1,0 +1,10 @@
+### Message LIST
+GET http://localhost:3000/api/messages
+
+### Create Msg
+POST http://localhost:3000/api/messages
+Content-Type: application/json
+
+{
+    "content": "BOB"
+}
