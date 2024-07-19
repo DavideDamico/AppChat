@@ -5,13 +5,16 @@ import { config } from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import path from "path";
 // #endregion
 
-// #region ::: CONFIGURATION :::
 config();
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -24,6 +27,7 @@ const client = createClient({
 });
 
 client.connect();
+
 app.use(
   cors({
     origin: "*",
@@ -31,7 +35,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-// #endregion
 
 io.on("connection", (socket) => {
   console.log("A user connected");
@@ -49,6 +52,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
+});
+
+app.get("/", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get("/api/messages", (req: Request, res: Response) => {
@@ -70,10 +77,6 @@ app.post("/api/messages", (req: Request, res: Response) => {
   );
 });
 
-app.listen(8080, () => {
-  console.log(`Server is running on http://localhost:${8080}/api/messages`);
-});
-
-server.listen(3000, () => {
-  console.log(`Server is running on http://localhost:${3000}/api/messages`);
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
