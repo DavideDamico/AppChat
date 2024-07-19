@@ -1,12 +1,11 @@
 // #region ::: IMPORTS :::
-import express, { Request, Response } from "express";
 import { createClient } from "@vercel/postgres";
+import express, { Request, Response } from "express";
 import { config } from "dotenv";
-import { createServer } from "http";
 import { Server } from "socket.io";
+import { createServer } from "http";
 import cors from "cors";
 import path from "path";
-// #endregion
 
 config();
 
@@ -33,12 +32,11 @@ app.use(
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
+  express.json()
 );
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
-
   socket.on("message-sent", (message) => {
     client.query(
       `INSERT INTO messages (content) VALUES ($1)`,
@@ -48,9 +46,8 @@ io.on("connection", (socket) => {
       }
     );
   });
-
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    console.log("User disconnected");
   });
 });
 
@@ -72,11 +69,11 @@ app.post("/api/messages", (req: Request, res: Response) => {
     [content],
     (error) => {
       if (error) res.status(500).json({ error });
-      else res.status(200).json({ message: "Message added" });
+      else res.status(200).json({ message: "Message created successfully" });
     }
   );
 });
 
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server API is running http://localhost:${PORT}`);
 });
